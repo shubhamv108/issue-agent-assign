@@ -4,6 +4,7 @@ public class Question2 {
      *
      */
 
+    // Time: O(), Space: O()
     private class Solution {
         <T> T solve() {
             return null;
@@ -11,10 +12,14 @@ public class Question2 {
     }
 
     public static void main(String[] args) {
-        var solution = new Question2().new Solution();
-        var result = solution.solve();
+        final var question = new Question2();
+
+        final var solution = question.new Solution();
+//        final var solution = question1.new Solution();
+
+        final var result = solution.<Object>solve();
         System.out.println(
-            result
+                result
         );
     }
 
