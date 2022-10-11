@@ -6,7 +6,15 @@ public class Question2 {
 
     // Time: O(), Space: O()
     private class Solution {
-        <T> T solve() {
+
+        Object solve() {
+            return null;
+        }
+    }
+
+    private class Solution2 {
+
+        Object solve() {
             return null;
         }
     }
@@ -15,9 +23,9 @@ public class Question2 {
         final var question = new Question2();
 
         final var solution = question.new Solution();
-//        final var solution = question1.new Solution();
+//        final var solution = question.new Solution2();
 
-        final var result = solution.<Object>solve();
+        final var result = solution.solve();
         System.out.println(
                 result
         );
