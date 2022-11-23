@@ -26,15 +26,20 @@ public class Agents {
     }
 
     public Agent add(Agent agent) {
-        agent.setId("A" + idGenerator.getAndIncrement());
-        this.availableAgentForIssue.add(agent);
-        for (IssueType issueType: agent.getIssueTypes()) {
-            Set<Agent> agents = this.availableAgentsForIssueType.get(issueType);
-            if (agents == null)
-                this.availableAgentsForIssueType.put(issueType, agents = new HashSet<>());
-            agents.add(agent);
+        try {
+            this.agentLockService.getLock(agent).writeLock().lock();
+            agent.setId("A" + idGenerator.getAndIncrement());
+            this.availableAgentForIssue.add(agent);
+            for (IssueType issueType : agent.getIssueTypes()) {
+                Set<Agent> agents = this.availableAgentsForIssueType.get(issueType);
+                if (agents == null)
+                    this.availableAgentsForIssueType.put(issueType, agents = new HashSet<>());
+                agents.add(agent);
+            }
+            return agent;
+        } finally {
+            this.agentLockService.getLock(agent).writeLock().unlock();
         }
-        return agent;
     }
 
     public Agent markFirstAgentForAssingingIssue(IssueType issueType) {
@@ -44,6 +49,8 @@ public class Agents {
         for (Agent agent: agents) {
             try {
                 this.agentLockService.getLock(agent).writeLock().lock();
+                if (!this.availableAgentsForIssueType.get(issueType).contains(agent))
+                    continue;
                 if (!this.assignedIssue.contains(agent)) {
                     this.assignedIssue.add(agent);
                     this.availableAgentForIssue.remove(agent);
