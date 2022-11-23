@@ -10,7 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 public class AgentService implements IAgentService, IAgentIssueService {
-    private final Agents agents = new Agents();
+    private final Agents agents;
+
+    public AgentService(Agents agents) {
+        this.agents = agents;
+    }
+
     @Override
     public Agent addAgent(String agentEmail, String agentName, List<IssueType> issueTypes) {
         Agent agent = new Agent(agentName, agentEmail, issueTypes);

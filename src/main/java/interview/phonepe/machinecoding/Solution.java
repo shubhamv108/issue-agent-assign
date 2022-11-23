@@ -1,8 +1,11 @@
 package interview.phonepe.machinecoding;
 
+import interview.phonepe.machinecoding.commons.LockService;
 import interview.phonepe.machinecoding.csticketmanagement.IIssueManageSystem;
 import interview.phonepe.machinecoding.csticketmanagement.IssueManagementSystem;
+import interview.phonepe.machinecoding.csticketmanagement.agent.Agent;
 import interview.phonepe.machinecoding.csticketmanagement.agent.AgentService;
+import interview.phonepe.machinecoding.csticketmanagement.agent.Agents;
 import interview.phonepe.machinecoding.csticketmanagement.exceptions.AppException;
 import interview.phonepe.machinecoding.csticketmanagement.exceptions.RequestException;
 import interview.phonepe.machinecoding.csticketmanagement.issue.IIssueService;
@@ -20,7 +23,9 @@ import java.util.Arrays;
 public class Solution {
     public static void main(String[] args) {
         try {
-            AgentService agentService = new AgentService();
+            LockService<Agent> agentLockService = new LockService<>();
+            Agents agents = new Agents(agentLockService);
+            AgentService agentService = new AgentService(agents);
 
             Issues issues = new Issues();
             AssignAgentToIssueStrategy assignAgentToIssueStrategy = new AnyAvailableAgentIssueAssignStrategy(agentService);

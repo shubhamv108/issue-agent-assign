@@ -1,37 +1,28 @@
 package interview.phonepe.machinecoding.csticketmanagement.agent;
 
+import interview.phonepe.machinecoding.commons.LockService;
 import interview.phonepe.machinecoding.csticketmanagement.issue.IssueType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Agents {
     private final AtomicInteger idGenerator = new AtomicInteger(1);
-    private Set<Agent> availableAgentForIssue = new LinkedHashSet<>();
-    private Map<IssueType, Set<Agent>> availableAgentsForIssueType = new HashMap<>(); // move this to seperate strategy
-    private Set<Agent> assignedIssue = new HashSet<>();
+    private final Set<Agent> availableAgentForIssue = ConcurrentHashMap.newKeySet();
+    private final Map<IssueType, Set<Agent>> availableAgentsForIssueType = new ConcurrentHashMap<>(); // move this to seperate strategy
+    private final Set<Agent> assignedIssue = ConcurrentHashMap.newKeySet();
 
-    private Set<Agent> hasWorked = new HashSet<>();
+    private final Set<Agent> hasWorked = ConcurrentHashMap.newKeySet();
 
-    private Map<Agent, ReentrantReadWriteLock> agentLocks = new ConcurrentHashMap<>();
+    private final LockService<Agent> agentLockService;
 
-    private ReentrantReadWriteLock getLockForAgent(Agent agent) {
-        var lock = agentLocks.get(agent);
-        if (lock != null)
-            return lock;
-        synchronized (agent) {
-            lock = new ReentrantReadWriteLock();
-            this.agentLocks.put(agent, lock);
-        }
-        return lock;
+    public Agents(LockService<Agent> agentLockService) {
+        this.agentLockService = agentLockService;
     }
 
     public Agent add(Agent agent) {
@@ -51,11 +42,15 @@ public class Agents {
         if (agents == null || agents.isEmpty())
             return null;
         for (Agent agent: agents) {
-            //read lock
-            if (!this.assignedIssue.contains(agent)) {
-                this.assignedIssue.add(agent);
-                this.availableAgentForIssue.remove(agent);
-                return agent;
+            try {
+                this.agentLockService.getLock(agent).writeLock().lock();
+                if (!this.assignedIssue.contains(agent)) {
+                    this.assignedIssue.add(agent);
+                    this.availableAgentForIssue.remove(agent);
+                    return agent;
+                }
+            } finally {
+                this.agentLockService.getLock(agent).writeLock().unlock();
             }
         }
         return null;
@@ -70,15 +65,24 @@ public class Agents {
     }
 
     public boolean returnAgentForAssigningIssue(Agent agent) {
-        // read lock
-        this.assignedIssue.remove(agent);
-        return this.availableAgentForIssue.add(agent);
+        try {
+            this.agentLockService.getLock(agent).writeLock().lock();
+            this.assignedIssue.remove(agent);
+            return this.availableAgentForIssue.add(agent);
+        } finally {
+            this.agentLockService.getLock(agent).writeLock().unlock();
+        }
     }
 
     public boolean remove(Agent agent) {
-        // read lock
-        this.assignedIssue.remove(agent);
-        return this.availableAgentForIssue.remove(agent);
-//        for ()
+        try {
+            this.agentLockService.getLock(agent).writeLock().lock();
+            this.assignedIssue.remove(agent);
+            for (IssueType issueType: agent.getIssueTypes())
+                this.availableAgentsForIssueType.get(issueType).remove(agent);
+            return this.availableAgentForIssue.remove(agent);
+        } finally {
+            this.agentLockService.getLock(agent).writeLock().unlock();
+        }
     }
 }
