@@ -1,6 +1,6 @@
 package code.shubham.csticketmanagement.agent;
 
-import code.shubham.commons.LockService;
+import code.shubham.commons.AbstractRepository;
 import code.shubham.csticketmanagement.issue.IssueType;
 
 import java.util.ArrayList;
@@ -9,37 +9,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class Agents {
-    private final AtomicInteger idGenerator = new AtomicInteger(1);
+public class Agents extends AbstractRepository<Agent, String> {
     private final Set<Agent> availableAgentForIssue = ConcurrentHashMap.newKeySet();
     private final Map<IssueType, Set<Agent>> availableAgentsForIssueType = new ConcurrentHashMap<>(); // move this to seperate strategy
     private final Set<Agent> assignedIssue = ConcurrentHashMap.newKeySet();
 
     private final Set<Agent> hasWorked = ConcurrentHashMap.newKeySet();
 
-    private final LockService<Agent> agentLockService;
 
-    public Agents(LockService<Agent> agentLockService) {
-        this.agentLockService = agentLockService;
+    @Override
+    protected void setId(Agent agent) {
+        agent.setId("A" + idGenerator.getAndIncrement());
     }
 
-    public Agent add(Agent agent) {
-        try {
-            this.agentLockService.getLock(agent).writeLock().lock();
-            agent.setId("A" + idGenerator.getAndIncrement());
-            this.availableAgentForIssue.add(agent);
-            for (IssueType issueType : agent.getIssueTypes()) {
-                Set<Agent> agents = this.availableAgentsForIssueType.get(issueType);
-                if (agents == null)
-                    this.availableAgentsForIssueType.put(issueType, agents = new HashSet<>());
-                agents.add(agent);
-            }
-            return agent;
-        } finally {
-            this.agentLockService.getLock(agent).writeLock().unlock();
+    @Override
+    protected void addToIndexes(Agent agent) {
+        for (IssueType issueType : agent.getIssueTypes()) {
+            Set<Agent> agents = this.availableAgentsForIssueType.get(issueType);
+            if (agents == null)
+                this.availableAgentsForIssueType.put(issueType, agents = new HashSet<>());
+            agents.add(agent);
         }
+        this.availableAgentForIssue.add(agent);
+    }
+
+    @Override
+    protected void removeFromIndexes(Agent agent) {
+        this.assignedIssue.remove(agent);
+        agent.getAssignedIssue().setAssignedTo(null);
+        for (IssueType issueType: agent.getIssueTypes())
+            this.availableAgentsForIssueType.get(issueType).remove(agent);
+        this.availableAgentForIssue.remove(agent);
     }
 
     public Agent markFirstAgentForAssingingIssue(IssueType issueType) {
@@ -48,7 +49,7 @@ public class Agents {
             return null;
         for (Agent agent: agents) {
             try {
-                this.agentLockService.getLock(agent).writeLock().lock();
+                this.keyLockService.getLock(agent.getId()).writeLock().lock();
                 if (!this.availableAgentsForIssueType.get(issueType).contains(agent))
                     continue;
                 if (!this.assignedIssue.contains(agent)) {
@@ -57,7 +58,7 @@ public class Agents {
                     return agent;
                 }
             } finally {
-                this.agentLockService.getLock(agent).writeLock().unlock();
+                this.keyLockService.getLock(agent.getId()).writeLock().unlock();
             }
         }
         return null;
@@ -73,23 +74,11 @@ public class Agents {
 
     public boolean returnAgentForAssigningIssue(Agent agent) {
         try {
-            this.agentLockService.getLock(agent).writeLock().lock();
+            this.lockWrite(agent);
             this.assignedIssue.remove(agent);
             return this.availableAgentForIssue.add(agent);
         } finally {
-            this.agentLockService.getLock(agent).writeLock().unlock();
-        }
-    }
-
-    public boolean remove(Agent agent) {
-        try {
-            this.agentLockService.getLock(agent).writeLock().lock();
-            this.assignedIssue.remove(agent);
-            for (IssueType issueType: agent.getIssueTypes())
-                this.availableAgentsForIssueType.get(issueType).remove(agent);
-            return this.availableAgentForIssue.remove(agent);
-        } finally {
-            this.agentLockService.getLock(agent).writeLock().unlock();
+            this.unlockWrite(agent);
         }
     }
 }

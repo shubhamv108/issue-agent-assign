@@ -6,15 +6,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Issues {
-    private final AtomicInteger idGenerator = new AtomicInteger(1);
+    private Integer idGenerator = 1;
     private final Map<String, Issue> issues = new HashMap<>();
     private final Set<Issue> resolvedIssues = new HashSet<>();
 
     public Issue add(Issue issue) {
-        issue.setId("I" + idGenerator.getAndIncrement());
+        issue.setId("I" + idGenerator++);
         this.issues.put(issue.getId(), issue);
         return issue;
     }

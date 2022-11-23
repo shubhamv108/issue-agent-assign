@@ -1,5 +1,6 @@
 package code.shubham.csticketmanagement.agent;
 
+import code.shubham.commons.AbstractEntity;
 import code.shubham.csticketmanagement.issue.Issue;
 import code.shubham.csticketmanagement.issue.IssueType;
 
@@ -8,8 +9,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Agent {
-    private String id;
+public class Agent extends AbstractEntity<String> {
     private String name;
     private final String email;
     private final Set<IssueType> issueTypes;
@@ -22,14 +22,6 @@ public class Agent {
         this.name = name;
         this.email = email;
         this.issueTypes = new HashSet<>(issueTypes);
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public void setAvailableForAssiginignIssue() {
@@ -65,5 +57,9 @@ public class Agent {
 
     public Set<IssueType> getIssueTypes() {
         return issueTypes;
+    }
+
+    public Issue getAssignedIssue() {
+        return assignedIssue;
     }
 }

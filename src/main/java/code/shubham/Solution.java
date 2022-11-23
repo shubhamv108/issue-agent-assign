@@ -23,8 +23,7 @@ import java.util.Arrays;
 public class Solution {
     public static void main(String[] args) {
         try {
-            LockService<Agent> agentLockService = new LockService<>();
-            Agents agents = new Agents(agentLockService);
+            Agents agents = new Agents();
             AgentService agentService = new AgentService(agents);
 
             Issues issues = new Issues();
