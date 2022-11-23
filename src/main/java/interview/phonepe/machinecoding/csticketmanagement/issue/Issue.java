@@ -1,7 +1,6 @@
 package interview.phonepe.machinecoding.csticketmanagement.issue;
 
 import interview.phonepe.machinecoding.csticketmanagement.agent.Agent;
-import interview.phonepe.machinecoding.csticketmanagement.issue.IssueType;
 
 import java.util.HashSet;
 import java.util.Set;

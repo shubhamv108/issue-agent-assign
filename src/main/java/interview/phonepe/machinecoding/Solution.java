@@ -32,6 +32,7 @@ public class Solution {
             Issue issue = issueManageSystem.createIssue("T1", IssueType.Gold, "subject", "descriptoion", "email");
             issueManageSystem.addAgent("A1@email", "A1", Arrays.asList(IssueType.Gold));
             issueManageSystem.assignIssue(issue.getId());
+            issueManageSystem.viewAgentsWorkHistory();
         } catch (RequestException requestException) {
             System.err.println(requestException.getMessage());
         } catch (AppException appException) {

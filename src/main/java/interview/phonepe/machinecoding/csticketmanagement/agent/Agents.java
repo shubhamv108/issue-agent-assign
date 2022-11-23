@@ -9,7 +9,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Agents {
     private final AtomicInteger idGenerator = new AtomicInteger(1);
@@ -18,6 +20,19 @@ public class Agents {
     private Set<Agent> assignedIssue = new HashSet<>();
 
     private Set<Agent> hasWorked = new HashSet<>();
+
+    private Map<Agent, ReentrantReadWriteLock> agentLocks = new ConcurrentHashMap<>();
+
+    private ReentrantReadWriteLock getLockForAgent(Agent agent) {
+        var lock = agentLocks.get(agent);
+        if (lock != null)
+            return lock;
+        synchronized (agent) {
+            lock = new ReentrantReadWriteLock();
+            this.agentLocks.put(agent, lock);
+        }
+        return lock;
+    }
 
     public Agent add(Agent agent) {
         agent.setId("A" + idGenerator.getAndIncrement());
@@ -35,12 +50,14 @@ public class Agents {
         Set<Agent> agents = this.availableAgentsForIssueType.get(issueType);
         if (agents == null || agents.isEmpty())
             return null;
-        for (Agent agent: agents)
+        for (Agent agent: agents) {
+            //read lock
             if (!this.assignedIssue.contains(agent)) {
                 this.assignedIssue.add(agent);
                 this.availableAgentForIssue.remove(agent);
                 return agent;
             }
+        }
         return null;
     }
 
@@ -53,7 +70,15 @@ public class Agents {
     }
 
     public boolean returnAgentForAssigningIssue(Agent agent) {
+        // read lock
         this.assignedIssue.remove(agent);
         return this.availableAgentForIssue.add(agent);
+    }
+
+    public boolean remove(Agent agent) {
+        // read lock
+        this.assignedIssue.remove(agent);
+        return this.availableAgentForIssue.remove(agent);
+//        for ()
     }
 }
