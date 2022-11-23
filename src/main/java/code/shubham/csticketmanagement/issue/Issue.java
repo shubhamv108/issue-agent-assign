@@ -1,6 +1,6 @@
-package interview.phonepe.machinecoding.csticketmanagement.issue;
+package code.shubham.csticketmanagement.issue;
 
-import interview.phonepe.machinecoding.csticketmanagement.agent.Agent;
+import code.shubham.csticketmanagement.agent.Agent;
 
 import java.util.HashSet;
 import java.util.Set;

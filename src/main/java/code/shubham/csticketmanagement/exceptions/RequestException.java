@@ -1,4 +1,4 @@
-package interview.phonepe.machinecoding.csticketmanagement.exceptions;
+package code.shubham.csticketmanagement.exceptions;
 
 public class RequestException extends RuntimeException {
     public RequestException(String message) {

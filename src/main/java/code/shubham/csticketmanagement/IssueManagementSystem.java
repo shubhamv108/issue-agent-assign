@@ -1,10 +1,10 @@
-package interview.phonepe.machinecoding.csticketmanagement;
+package code.shubham.csticketmanagement;
 
-import interview.phonepe.machinecoding.csticketmanagement.agent.Agent;
-import interview.phonepe.machinecoding.csticketmanagement.agent.IAgentService;
-import interview.phonepe.machinecoding.csticketmanagement.issue.IIssueService;
-import interview.phonepe.machinecoding.csticketmanagement.issue.Issue;
-import interview.phonepe.machinecoding.csticketmanagement.issue.IssueType;
+import code.shubham.csticketmanagement.agent.Agent;
+import code.shubham.csticketmanagement.agent.IAgentService;
+import code.shubham.csticketmanagement.issue.IIssueService;
+import code.shubham.csticketmanagement.issue.Issue;
+import code.shubham.csticketmanagement.issue.IssueType;
 
 import java.util.List;
 import java.util.Map;

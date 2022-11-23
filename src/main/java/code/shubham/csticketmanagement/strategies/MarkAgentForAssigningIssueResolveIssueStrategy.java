@@ -1,7 +1,7 @@
-package interview.phonepe.machinecoding.csticketmanagement.strategies;
+package code.shubham.csticketmanagement.strategies;
 
-import interview.phonepe.machinecoding.csticketmanagement.agent.IAgentIssueService;
-import interview.phonepe.machinecoding.csticketmanagement.issue.Issue;
+import code.shubham.csticketmanagement.agent.IAgentIssueService;
+import code.shubham.csticketmanagement.issue.Issue;
 
 public class MarkAgentForAssigningIssueResolveIssueStrategy implements ResolveIssueStrategy {
 

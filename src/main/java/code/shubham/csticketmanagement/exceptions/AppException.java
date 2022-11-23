@@ -1,4 +1,4 @@
-package interview.phonepe.machinecoding.csticketmanagement.exceptions;
+package code.shubham.csticketmanagement.exceptions;
 
 public class AppException extends RuntimeException {
     public AppException(String message) {

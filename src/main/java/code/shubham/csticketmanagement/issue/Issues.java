@@ -1,6 +1,6 @@
-package interview.phonepe.machinecoding.csticketmanagement.issue;
+package code.shubham.csticketmanagement.issue;
 
-import interview.phonepe.machinecoding.csticketmanagement.exceptions.RequestException;
+import code.shubham.csticketmanagement.exceptions.RequestException;
 
 import java.util.HashMap;
 import java.util.HashSet;

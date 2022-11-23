@@ -1,9 +1,9 @@
-package interview.phonepe.machinecoding.csticketmanagement.issue;
+package code.shubham.csticketmanagement.issue;
 
-import interview.phonepe.machinecoding.csticketmanagement.agent.Agent;
-import interview.phonepe.machinecoding.csticketmanagement.exceptions.RequestException;
-import interview.phonepe.machinecoding.csticketmanagement.strategies.AssignAgentToIssueStrategy;
-import interview.phonepe.machinecoding.csticketmanagement.strategies.ResolveIssueStrategy;
+import code.shubham.csticketmanagement.agent.Agent;
+import code.shubham.csticketmanagement.exceptions.RequestException;
+import code.shubham.csticketmanagement.strategies.AssignAgentToIssueStrategy;
+import code.shubham.csticketmanagement.strategies.ResolveIssueStrategy;
 
 import java.util.List;
 

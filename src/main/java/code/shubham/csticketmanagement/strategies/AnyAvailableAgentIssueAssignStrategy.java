@@ -1,9 +1,9 @@
-package interview.phonepe.machinecoding.csticketmanagement.strategies;
+package code.shubham.csticketmanagement.strategies;
 
-import interview.phonepe.machinecoding.csticketmanagement.agent.Agent;
-import interview.phonepe.machinecoding.csticketmanagement.agent.IAgentIssueService;
-import interview.phonepe.machinecoding.csticketmanagement.exceptions.AppException;
-import interview.phonepe.machinecoding.csticketmanagement.issue.Issue;
+import code.shubham.csticketmanagement.agent.IAgentIssueService;
+import code.shubham.csticketmanagement.agent.Agent;
+import code.shubham.csticketmanagement.exceptions.AppException;
+import code.shubham.csticketmanagement.issue.Issue;
 
 public class AnyAvailableAgentIssueAssignStrategy implements AssignAgentToIssueStrategy {
 

@@ -1,6 +1,6 @@
-package interview.phonepe.machinecoding.csticketmanagement.agent;
+package code.shubham.csticketmanagement.agent;
 
-import interview.phonepe.machinecoding.csticketmanagement.issue.IssueType;
+import code.shubham.csticketmanagement.issue.IssueType;
 
 public interface IAgentIssueService {
 

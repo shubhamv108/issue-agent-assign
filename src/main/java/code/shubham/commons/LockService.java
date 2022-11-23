@@ -1,4 +1,4 @@
-package interview.phonepe.machinecoding.commons;
+package code.shubham.commons;
 
 import java.util.HashMap;
 import java.util.Map;
