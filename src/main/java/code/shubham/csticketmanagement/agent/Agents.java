@@ -38,8 +38,12 @@ public class Agents extends AbstractRepository<Agent, String> {
     protected void removeFromIndexes(Agent agent) {
         this.assignedIssue.remove(agent);
         agent.getAssignedIssue().setAssignedTo(null);
-        for (IssueType issueType: agent.getIssueTypes())
-            this.availableAgentsForIssueType.get(issueType).remove(agent);
+        for (IssueType issueType: agent.getIssueTypes()) {
+            Set<Agent> agents = this.availableAgentsForIssueType.get(issueType);
+            synchronized (agents) {
+                agents.remove(agent);
+            }
+        }
         this.availableAgentForIssue.remove(agent);
     }
 
@@ -47,18 +51,20 @@ public class Agents extends AbstractRepository<Agent, String> {
         Set<Agent> agents = this.availableAgentsForIssueType.get(issueType);
         if (agents == null || agents.isEmpty())
             return null;
-        for (Agent agent: agents) {
-            try {
-                this.keyLockService.getLock(agent.getId()).writeLock().lock();
-                if (!this.availableAgentsForIssueType.get(issueType).contains(agent))
-                    continue;
-                if (!this.assignedIssue.contains(agent)) {
-                    this.assignedIssue.add(agent);
-                    this.availableAgentForIssue.remove(agent);
-                    return agent;
+        synchronized (agents) {
+            for (Agent agent : agents) {
+                try {
+                    this.keyLockService.getLock(agent.getId()).writeLock().tryLock(); // using tryLock to avoid deadlock with removeFs  romIndexes method
+                    if (!this.availableAgentsForIssueType.get(issueType).contains(agent))
+                        continue;
+                    if (!this.assignedIssue.contains(agent)) {
+                        this.assignedIssue.add(agent);
+                        this.availableAgentForIssue.remove(agent);
+                        return agent;
+                    }
+                } finally {
+                    this.keyLockService.getLock(agent.getId()).writeLock().unlock();
                 }
-            } finally {
-                this.keyLockService.getLock(agent.getId()).writeLock().unlock();
             }
         }
         return null;
