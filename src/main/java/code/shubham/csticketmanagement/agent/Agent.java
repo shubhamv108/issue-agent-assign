@@ -30,7 +30,7 @@ public class Agent {
         return id;
     }
 
-    public void unassignIssue() {
+    public void unAssignIssue() {
         this.assignedIssue = null;
     }
 
@@ -38,6 +38,10 @@ public class Agent {
         this.assignedIssue = issue;
         this.workedOn.add(issue);
         issue.setAssignedTo(this);
+    }
+
+    public boolean hasNoIssueAssigned() {
+        return this.getAssignedIssue() == null;
     }
 
     public Set<Issue> getWorkedOn() {

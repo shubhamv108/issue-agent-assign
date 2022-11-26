@@ -32,7 +32,7 @@ public class AgentIssueStrategy {
             return null;
         synchronized (agents) {
             for (Agent agent: agents)
-                if (agent.getAssignedIssue() == null) {
+                if (agent.hasNoIssueAssigned()) {
                     agent.setAssignedIssue(issue);
                     this.workedAgents.add(agent);
                     return agent;
@@ -59,7 +59,7 @@ public class AgentIssueStrategy {
     }
 
     public void remove(Agent agent) {
-        agent.unassignIssue();
+        agent.unAssignIssue();
         for (IssueType issueType: agent.getIssueTypes())
             this.remove(issueType, agent);
     }
