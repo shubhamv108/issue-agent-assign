@@ -1,4 +1,4 @@
-package code.shubham.csticketmanagement.strategies.filter;
+package code.shubham.commons.strategies.filter;
 
 import code.shubham.commons.query.Query;
 import code.shubham.commons.query.clauses.from.FromClause;
@@ -9,7 +9,6 @@ import code.shubham.csticketmanagement.issue.Issue;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 public class QueryFilterStrategy implements FilterStrategy<Issue> {

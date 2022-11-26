@@ -4,5 +4,7 @@ public interface IAgentService {
 
     Agent add(Agent agent);
 
-    Agent remove(String id);
+    void remove(String id);
+
+    Agent getById(String agentId);
 }

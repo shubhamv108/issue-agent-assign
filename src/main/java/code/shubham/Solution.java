@@ -12,8 +12,8 @@ import code.shubham.csticketmanagement.issue.IssueFactory;
 import code.shubham.csticketmanagement.issue.IssueService;
 import code.shubham.csticketmanagement.issue.IssueType;
 import code.shubham.csticketmanagement.strategies.AgentIssueStrategy;
-import code.shubham.csticketmanagement.strategies.filter.FilterStrategy;
-import code.shubham.csticketmanagement.strategies.filter.InvertedIndexFilterStrategy;
+import code.shubham.commons.strategies.filter.FilterStrategy;
+import code.shubham.commons.strategies.filter.InvertedIndexFilterStrategy;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package code.shubham.csticketmanagement.strategies.filter;
+package code.shubham.commons.strategies.filter;
 
 import code.shubham.commons.index.inverted.InvertedIndex;
 import code.shubham.csticketmanagement.issue.Issue;

@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AgentService implements IAgentService {
     private final Map<String, Agent> agents = new ConcurrentHashMap<>();
 
+    @Override
     public Agent getById(String id) {
         return this.agents.get(id);
     }
@@ -22,7 +23,7 @@ public class AgentService implements IAgentService {
     }
 
     @Override
-    public Agent remove(String id) {
-        return this.agents.remove(id);
+    public void remove(String id) {
+        this.agents.remove(id);
     }
 }

@@ -1,4 +1,4 @@
-package code.shubham.csticketmanagement.strategies.filter;
+package code.shubham.commons.strategies.filter;
 
 import java.util.Collection;
 import java.util.List;

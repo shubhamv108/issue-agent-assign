@@ -5,10 +5,8 @@ import code.shubham.csticketmanagement.issue.Issue;
 import code.shubham.csticketmanagement.issue.IssueType;
 
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AgentIssueStrategy {
 

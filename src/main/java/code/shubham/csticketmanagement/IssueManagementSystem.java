@@ -55,8 +55,9 @@ public class IssueManagementSystem implements IIssueManageSystem {
 
     @Override
     public void removeAgent(String agentId) {
-        Agent agent = this.agentService.remove(agentId);
+        Agent agent = this.agentService.getById(agentId);
         this.agentIssueStrategy.remove(agent);
+        this.agentService.remove(agentId);
         System.out.println(String.format("Agent %s removed", agent));
     }
 

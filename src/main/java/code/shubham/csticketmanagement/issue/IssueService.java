@@ -3,12 +3,10 @@ package code.shubham.csticketmanagement.issue;
 import code.shubham.csticketmanagement.agent.Agent;
 import code.shubham.csticketmanagement.exceptions.RequestException;
 import code.shubham.csticketmanagement.response.IssueResolveResponse;
-import code.shubham.csticketmanagement.strategies.filter.FilterStrategy;
+import code.shubham.commons.strategies.filter.FilterStrategy;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
