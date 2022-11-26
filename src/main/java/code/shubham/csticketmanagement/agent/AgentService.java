@@ -1,49 +1,28 @@
 package code.shubham.csticketmanagement.agent;
 
-import code.shubham.csticketmanagement.issue.Issue;
-import code.shubham.csticketmanagement.issue.IssueType;
+import code.shubham.csticketmanagement.exceptions.RequestException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class AgentService implements IAgentService, IAgentIssueService {
-    private final Agents agents;
+public class AgentService implements IAgentService {
+    private final Map<String, Agent> agents = new ConcurrentHashMap<>();
 
-    public AgentService(Agents agents) {
-        this.agents = agents;
+    public Agent getById(String id) {
+        return this.agents.get(id);
     }
 
     @Override
-    public Agent addAgent(String agentEmail, String agentName, List<IssueType> issueTypes) {
-        Agent agent = new Agent(agentName, agentEmail, issueTypes);
-        return this.agents.add(agent);
+    public Agent add(Agent agent) {
+        Agent existing = agents.get(agent.getId());
+        if (existing != null)
+            throw new RequestException("Agent already exists");
+        this.agents.put(agent.getId(), agent);
+        return agent;
     }
 
     @Override
-    public Map<Agent, List<Issue>> viewAgentsWorkHistory() {
-        Collection<Agent> agents = this.agents.getHasWorked();
-        Map<Agent, List<Issue>> worked = new HashMap<>();
-        for (Agent agent: agents)
-            worked.put(agent, new ArrayList<>(agent.getWorkedOn()));
-        return worked;
-    }
-
-    @Override
-    public Agent markFirstAgentForAssingingIssue(IssueType issueType) {
-        return this.agents.markFirstAgentForAssingingIssue(issueType);
-    }
-
-    @Override
-    public void markhasWorked(Agent agent) {
-        this.agents.hasWorked(agent);
-    }
-
-    @Override
-    public boolean returnAgentForAssigingIssue(Agent agent) {
-        agent.setAvailableForAssiginignIssue();
-        return this.agents.returnAgentForAssigningIssue(agent);
+    public Agent remove(String id) {
+        return this.agents.remove(id);
     }
 }

@@ -23,7 +23,8 @@ public class Issue {
 
     private Set<Agent> workedBy = new HashSet<>();
 
-    public Issue(String transactionId, IssueType issueType, String subject, String description, String email) {
+    public Issue(String id, String transactionId, IssueType issueType, String subject, String description, String email) {
+        this.id = id;
         this.transactionId = transactionId;
         this.issueType = issueType;
         this.subject = subject;
@@ -39,10 +40,13 @@ public class Issue {
         return id;
     }
 
-    public boolean resolve(String resolution) {
+    public Agent resolve(String resolution) {
         this.resolution = resolution;
+        Agent agent = this.assignedTo;
+        agent.setAssignedIssue(null);
         this.assignedTo = null;
-        return this.isResolved = true;
+        this.isResolved = true;
+        return agent;
     }
 
     public void setStatus(String status) {

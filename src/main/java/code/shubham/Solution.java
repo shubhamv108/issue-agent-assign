@@ -1,47 +1,49 @@
 package code.shubham;
 
-import code.shubham.commons.LockService;
-import code.shubham.csticketmanagement.IssueManagementSystem;
-import code.shubham.csticketmanagement.exceptions.RequestException;
-import code.shubham.csticketmanagement.strategies.AnyAvailableAgentIssueAssignStrategy;
-import code.shubham.csticketmanagement.strategies.AssignAgentToIssueStrategy;
-import code.shubham.csticketmanagement.strategies.MarkAgentForAssigningIssueResolveIssueStrategy;
-import code.shubham.csticketmanagement.strategies.ResolveIssueStrategy;
 import code.shubham.csticketmanagement.IIssueManageSystem;
-import code.shubham.csticketmanagement.agent.Agent;
+import code.shubham.csticketmanagement.IssueManagementSystem;
+import code.shubham.csticketmanagement.agent.AgentFactory;
 import code.shubham.csticketmanagement.agent.AgentService;
-import code.shubham.csticketmanagement.agent.Agents;
 import code.shubham.csticketmanagement.exceptions.AppException;
+import code.shubham.csticketmanagement.exceptions.RequestException;
 import code.shubham.csticketmanagement.issue.IIssueService;
 import code.shubham.csticketmanagement.issue.Issue;
+import code.shubham.csticketmanagement.issue.IssueFactory;
 import code.shubham.csticketmanagement.issue.IssueService;
 import code.shubham.csticketmanagement.issue.IssueType;
-import code.shubham.csticketmanagement.issue.Issues;
+import code.shubham.csticketmanagement.strategies.AgentIssueStrategy;
+import code.shubham.csticketmanagement.strategies.filter.FilterStrategy;
+import code.shubham.csticketmanagement.strategies.filter.InvertedIndexFilterStrategy;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Solution {
     public static void main(String[] args) {
         try {
-            Agents agents = new Agents();
-            AgentService agentService = new AgentService(agents);
+            final IssueFactory issueFactory = new IssueFactory();
+            final AgentFactory agentFactory = new AgentFactory();
+            final AgentIssueStrategy agentIssueStrategy = new AgentIssueStrategy();
+            final AgentService agentService = new AgentService();
 
-            Issues issues = new Issues();
-            AssignAgentToIssueStrategy assignAgentToIssueStrategy = new AnyAvailableAgentIssueAssignStrategy(agentService);
-            ResolveIssueStrategy resolveIssueStrategy = new MarkAgentForAssigningIssueResolveIssueStrategy(agentService);
-            IIssueService issueService = new IssueService(issues, assignAgentToIssueStrategy, resolveIssueStrategy);
+            final Map<String, Issue> issues = new HashMap<>();
+            final FilterStrategy<Issue> filterStrategy = new InvertedIndexFilterStrategy(issues);
+            final IIssueService issueService = new IssueService(issues, filterStrategy);
 
-            IIssueManageSystem issueManageSystem = new IssueManagementSystem(issueService, agentService);
+            final IIssueManageSystem issueManageSystem = new IssueManagementSystem(
+                    issueFactory, agentFactory, issueService, agentService, agentIssueStrategy);
 
-            Issue issue = issueManageSystem.createIssue("T1", IssueType.Gold, "subject", "descriptoion", "email");
+            issueManageSystem.createIssue("T1", IssueType.Gold, "subject", "description", "email");
             issueManageSystem.addAgent("A1@email", "A1", Arrays.asList(IssueType.Gold));
-            issueManageSystem.assignIssue(issue.getId());
+            issueManageSystem.assignIssue("I1");
+            issueManageSystem.updateIssue("I1", "REOPEN", "Reopened after resolution completion.");
             issueManageSystem.viewAgentsWorkHistory();
+            issueManageSystem.getIssues("{\"email\":\"email\"}");
         } catch (RequestException requestException) {
             System.err.println(requestException.getMessage());
         } catch (AppException appException) {
             System.err.println(appException.getMessage());
         }
-
     }
 }

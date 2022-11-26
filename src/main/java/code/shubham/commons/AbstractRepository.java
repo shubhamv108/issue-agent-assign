@@ -12,8 +12,6 @@ public abstract class AbstractRepository<Object extends AbstractEntity<Key>, Key
     protected final LockService<Key> keyLockService = new LockService<>();
 
     public Object add(Object object) {
-        if (object.getId() == null)
-            this.setId(object);
         try {
             this.keyLockService.getLock(object.getId()).writeLock().lock();
             this.primaryIndex.put(object.getId(), object);
@@ -57,21 +55,5 @@ public abstract class AbstractRepository<Object extends AbstractEntity<Key>, Key
 
     protected void unlockRead(Object object) {
         this.keyLockService.getLock(object.getId()).readLock().unlock();
-    }
-
-    protected void lockWrite(Key id) {
-        this.keyLockService.getLock(id).writeLock().lock();
-    }
-
-    protected void unlockWrite(Key id) {
-        this.keyLockService.getLock(id).writeLock().unlock();
-    }
-
-    protected void lockRead(Key id) {
-        this.keyLockService.getLock(id).readLock().lock();
-    }
-
-    protected void unlockRead(Key id) {
-        this.keyLockService.getLock(id).readLock().unlock();
     }
 }

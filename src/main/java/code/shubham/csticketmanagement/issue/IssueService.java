@@ -2,64 +2,68 @@ package code.shubham.csticketmanagement.issue;
 
 import code.shubham.csticketmanagement.agent.Agent;
 import code.shubham.csticketmanagement.exceptions.RequestException;
-import code.shubham.csticketmanagement.strategies.AssignAgentToIssueStrategy;
-import code.shubham.csticketmanagement.strategies.ResolveIssueStrategy;
+import code.shubham.csticketmanagement.response.IssueResolveResponse;
+import code.shubham.csticketmanagement.strategies.filter.FilterStrategy;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class IssueService implements IIssueService {
 
-    private final Issues issues;
+    private Integer idGenerator = 1;
+    private final Map<String, Issue> issues;
+    private final Set<Issue> resolvedIssues = new HashSet<>();
 
-    private final AssignAgentToIssueStrategy assignAgentToIssueStrategy;
-    private final ResolveIssueStrategy resolveIssueStrategy;
+    private final FilterStrategy<Issue> filterStrategy;
 
-    public IssueService(Issues issues, AssignAgentToIssueStrategy assignAgentToIssueStrategy, ResolveIssueStrategy resolveIssueStrategy) {
+    public IssueService(Map<String, Issue> issues, FilterStrategy<Issue> filterStrategy) {
         this.issues = issues;
-        this.assignAgentToIssueStrategy = assignAgentToIssueStrategy;
-        this.resolveIssueStrategy = resolveIssueStrategy;
+        this.filterStrategy = filterStrategy;
+    }
+
+    public Issue create(Issue issue) {
+        Issue existing = this.issues.get(issue);
+        if (existing != null)
+            throw new RequestException("Already exists");
+        this.issues.put(issue.getId(), issue);
+        this.filterStrategy.add(issue);
+        return issue;
     }
 
     @Override
-    public Issue createIssue(String transactionId, IssueType issueType, String subject, String description, String email) {
-        Issue issue = new Issue(transactionId, issueType, subject, description, email);
-        return this.issues.add(issue);
+    public Issue getById(String id) {
+        return this.issues.get(id);
+    }
+
+    private Issue getByIdOrThrow(String id) {
+        Issue issue =  this.getById(id);
+        if (issue == null)
+            throw new RequestException("Issue Not Found");
+        return issue;
     }
 
     @Override
-    public Issue updateIssue(String issueId, String status, String resolution) {
-        Issue issue =  this.getById(issueId);
+    public Issue update(String id, String status, String resolution) {
+        Issue issue =  this.getByIdOrThrow(id);
         issue.setStatus(status);
         issue.setResolution(resolution);
         return issue;
     }
 
     @Override
-    public boolean resolveIssue(String issueId, String resolution) {
-        Issue issue = this.issues.resolve(issueId, resolution);
-        if (issue.isResolved()) {
-            this.resolveIssueStrategy.resolveIssue(issue);
-            return true;
-        }
-        return false;
+    public IssueResolveResponse resolve(String id, String resolution) {
+        Issue issue = this.getByIdOrThrow(id);
+        Agent agent = issue.resolve(resolution);
+        this.resolvedIssues.add(issue);
+        return new IssueResolveResponse(issue.getIssueType(), agent);
     }
 
     @Override
-    public Agent assignIssue(String issueId) {
-        Issue issue = this.getById(issueId);
-        this.assignAgentToIssueStrategy.assign(issue);
-        return issue.getAssignedTo();
-    }
-
-    @Override
-    public List<Issue> getIssues(String filter) {
-        return null;
-    }
-
-    private Issue getById(String id) {
-        Issue issue =  this.issues.getById(id);
-        if (issue == null)
-            throw new RequestException("Issue Not Found");
-        return issue;
+    public Collection<Issue> get(Map<String, Object> filter) {
+        return this.filterStrategy.filter(filter);
     }
 }

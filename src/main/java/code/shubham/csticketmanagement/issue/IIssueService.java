@@ -1,17 +1,19 @@
 package code.shubham.csticketmanagement.issue;
 
-import code.shubham.csticketmanagement.agent.Agent;
+import code.shubham.csticketmanagement.response.IssueResolveResponse;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface IIssueService {
 
-    Issue createIssue(String transactionId, IssueType issueType, String subject, String description, String email);
+    Issue create(Issue issue);
 
-    Issue updateIssue(String issueId, String status, String resolution);
-    boolean resolveIssue(String issueId, String resolution);
+    Issue update(String issueId, String status, String resolution);
+    IssueResolveResponse resolve(String issueId, String resolution);
 
-    Agent assignIssue(String issueId);
+    Collection<Issue> get(Map<String, Object> filter);
 
-    List<Issue> getIssues(String filter);
+    Issue getById(String id);
 }
