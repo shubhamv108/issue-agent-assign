@@ -59,9 +59,9 @@ public class AgentIssueStrategy {
     }
 
     public void remove(Agent agent) {
-        agent.unAssignIssue();
         for (IssueType issueType: agent.getIssueTypes())
             this.remove(issueType, agent);
+        agent.unAssignIssue();
     }
 
     public void remove(IssueType issueType, Agent agent) {
